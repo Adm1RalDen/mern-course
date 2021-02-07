@@ -1,0 +1,6 @@
+{
+  "port": 5000,
+  "jwtSecret": "roger  secret code here",
+  "mongoUri": "mongodb+srv://denys:CDErfv228@cluster0.8f5oj.mongodb.net/app?retryWrites=true&w=majority",
+  "baseUrl": "http://localhost:5000"
+}
