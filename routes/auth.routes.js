@@ -45,7 +45,7 @@ router.post(
 router.post(
     '/login',
     [
-        check('email', 'Не валидная почта').normalizeEmail({gmail_remove_dots: false}).isEmail(),
+        check('email', 'Не валидная почта').isEmail(),
         check('password', 'Поля обязательное').exists()
     ],
     async (req, res) => {
