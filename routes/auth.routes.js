@@ -11,7 +11,8 @@ router.post(
     '/register',
     [
         check('email', 'Не валидный пароль').isEmail(),
-        check('password', 'Минимальная длина поля, 4 символа').isLength({min: 4})
+        check('password', 'Минимальная длина поля, 4 символа').isLength({min: 4}),
+        check('name', 'Минимальная длина 2 символа').isLength({min: 2}),
     ],
     async (req, res) => {
         try {
@@ -21,7 +22,7 @@ router.post(
                 return res.status(400).json({errors: errors.array(), message: "Неверные данные"})
             }
 
-            const {email, password} = req.body
+            const {email, password, name} = req.body
             const candidate = await User.findOne({email})
 
             if (candidate) {
@@ -29,7 +30,14 @@ router.post(
             }
 
             const hashedPassword = await bcrypt.hash(password, 12)
-            const user = new User({email, password: hashedPassword})
+            const user = new User({
+                email,
+                password: hashedPassword,
+                name,
+                status: 'offline',
+                roomsIds: [],
+                lastActivity: Date.now()
+            })
 
             await user.save()
 
@@ -75,9 +83,11 @@ router.post(
                 config.get('jwtSecret'),
                 {expiresIn: "1h"}
             )
-
+            const obj = user.toObject()
+            delete obj.password
+            console.log(user)
             // статус по замовчуванню 200
-            return res.json({token, userId: user.id, message: "Успешный логин"})
+            return res.json({token, user: obj, message: "Успешный логин"})
         } catch (e) {
             console.log('this message', e.message)
             res.status(500).json({message: "Что-то пошло не так, попробуйте снова"})
