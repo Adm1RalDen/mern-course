@@ -36,7 +36,8 @@ router.post(
                 name,
                 status: 'offline',
                 roomsIds: [],
-                lastActivity: Date.now()
+                lastActivity: Date.now(),
+                contacts: []
             })
 
             await user.save()
@@ -81,15 +82,16 @@ router.post(
             const token = jwt.sign(
                 {userId: user.id},
                 config.get('jwtSecret'),
-                {expiresIn: "1h"}
+                {expiresIn: "12h"}
             )
+
             const obj = user.toObject()
             delete obj.password
-            console.log(user)
+
             // статус по замовчуванню 200
             return res.json({token, user: obj, message: "Успешный логин"})
         } catch (e) {
-            console.log('this message', e.message)
+            console.log('login error message:', e.message)
             res.status(500).json({message: "Что-то пошло не так, попробуйте снова"})
         }
     })
